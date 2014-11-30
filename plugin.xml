@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0" id="xu.li.cordova.parse" version="0.1.0">
+    <name>Parse.com</name>
+    <description>Cordova Plugin for Parse.com</description>
+    <license>MIT</license>
+    <keywords>cordova,parse.com</keywords>
+    <repo>https://github.com/xu-li/cordova-plugin-parse</repo>
+    <issue>https://github.com/xu-li/cordova-plugin-parse/issues</issue>
+
+    <!-- JS -->
+    <js-module src="www/parse.js" name="parse">
+        <clobbers target="cordova.plugins.Parse" />
+    </js-module>
+
+    <!-- ios -->
+    <platform name="ios">
+        <config-file target="config.xml" parent="/*">
+            <feature name="Parse">
+                <param name="ios-package" value="CDVParse" onload="true" />
+            </feature>
+        </config-file>
+
+        <header-file src="src/ios/CDVParse.h" />
+        <source-file src="src/ios/CDVParse.m" />
+        <header-file src="src/ios/AppDelegate+CDVParse.h" />
+        <source-file src="src/ios/AppDelegate+CDVParse.m" />
+
+        <!-- Parse official frameworks -->
+        <framework src="src/ios/frameworks/parse/1.5.0/Bolts.framework" custom="true" />
+        <framework src="src/ios/frameworks/parse/1.5.0/Parse.framework" custom="true" />
+
+        <!-- Required frameworks -->
+        <framework src="AudioToolbox.framework" />
+        <framework src="CFNetwork.framework" />
+        <framework src="CoreGraphics.framework" />
+        <framework src="CoreLocation.framework" />
+        <framework src="libz.dylib" />
+        <framework src="MobileCoreServices.framework" />
+        <framework src="QuartzCore.framework" />
+        <framework src="Security.framework" />
+        <framework src="StoreKit.framework" />
+        <framework src="SystemConfiguration.framework" />
+    </platform>
+</plugin>
