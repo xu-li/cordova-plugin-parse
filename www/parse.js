@@ -8,19 +8,17 @@ function noop() {};
 
 /**
  * Set Application ID and Client Key
+ *
+ * Possible keys in options:
+ * 1. application_id(required):    YOUR_PARSE_APPLICATION_ID
+ * 2. client_key(required):        YOUR_PARSE_CLIENT_KEY
+ * 3. request_remote_notification: true
+ * 4. notification_callback:       YOUR_CALLBACK_FUNCTION_NAME
  */
-Parse.prototype.setApplicationIDAndClientKey = function (applicationID, clientKey, requestRemoteNotifications, success, fail) {
-    // format #1: setApplicationIDAndClientKey(applicationID, clientKey, success, fail);
-    if (typeof requestRemoteNotifications == "function" || typeof requestRemoteNotifications == "undefined") {
-        fail = success || noop;
-        success = requestRemoteNotifications || noop;
-        requestRemoteNotifications = true;
-    } else {
-        // format #2: setApplicationIDAndClientKey(applicationID, clientKey, requestRemoteNotifications, success, fail);
-        success = success || noop;
-        fail = fail || noop;
-    }
-    exec(success, fail, 'Parse', 'setApplicationIDAndClientKey', [applicationID, clientKey, requestRemoteNotifications]);
+Parse.prototype.setup = function (options, success, fail) {
+    success = success || noop;
+    fail = fail || noop;
+    exec(success, fail, 'Parse', 'setup', [options]);
 };
 
 /**
@@ -50,6 +48,6 @@ Parse.prototype.linkUsernameToInstallation = function (username, key, success, f
         exec(success, fail, 'Parse', 'linkUsernameToInstallation', [username, key]);
     }
 };
-
+               
 // export it
 module.exports = new Parse();

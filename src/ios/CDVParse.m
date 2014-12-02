@@ -11,26 +11,27 @@
 
 @implementation CDVParse
 
-- (void)setApplicationIDAndClientKey:(CDVInvokedUrlCommand *)command
+- (BOOL)configWithOptions:(NSDictionary *)options
 {
-    // get application id and client key
-    NSString *applicationID = command.arguments[0];
-    NSString *clientKey = command.arguments[1];
+    return [self configWithOptions:options withPrefix:@""];
+}
+
+- (BOOL)configWithOptions:(NSDictionary *)options withPrefix:(NSString *)prefix;
+{
+    // all possible options
+    NSString *applicationID = options[[prefix stringByAppendingString:@"application_id" ]];
+    NSString *clientKey = options[[prefix stringByAppendingString:@"client_key"]];
+    NSString *jsCallback = options[[prefix stringByAppendingString:@"notification_callback"]];
+    BOOL requestRemoteNotifications = [options[[prefix stringByAppendingString:@"request_remote_notification"]] boolValue];
     
     if ([applicationID length] == 0 || [clientKey length] == 0) {
-        [self failWithCallbackID:command.callbackId withMessage:@"Application ID and Client Key are both required."];
-        return ;
+        return NO;
     }
     
     NSLog(@"Parse Application ID: %@, Client Key: %@.", applicationID, clientKey);
     [Parse setApplicationId:applicationID clientKey:clientKey];
     
-    // optional
-    BOOL requestRemoteNotifications = YES;
-    if ([command.arguments count] > 2) {
-        requestRemoteNotifications = [command.arguments[2] boolValue];
-    }
-    
+    // register remote notification
     if (requestRemoteNotifications) {
         // enable push notifiction
         UIUserNotificationType userNotificationTypes = (UIUserNotificationTypeAlert |
@@ -40,6 +41,43 @@
                                                                                  categories:nil];
         [[UIApplication sharedApplication] registerUserNotificationSettings:settings];
         [[UIApplication sharedApplication] registerForRemoteNotifications];
+    }
+    
+    // set callback
+    self.jsCallback = jsCallback;
+    
+    return YES;
+}
+
+- (void)notificationReceived
+{
+    if (!self.notificationMessage || !self.jsCallback) {
+        return ;
+    }
+    
+    NSError *error;
+    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:self.notificationMessage
+                                                       options:NSJSONWritingPrettyPrinted
+                                                         error:&error];
+    if (!jsonData) {
+        NSLog(@"Serialization error: %@", [error localizedDescription]);
+        return ;
+    }
+
+    // Send it to webview
+    NSString *json = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+    [self.webView stringByEvaluatingJavaScriptFromString:[NSString stringWithFormat:@"%@(%@);", self.jsCallback, json]];
+    
+    self.notificationMessage = nil;
+}
+
+- (void)setup:(CDVInvokedUrlCommand *)command
+{
+    NSDictionary *options = command.arguments[0];
+    
+    if (![self configWithOptions:options]) {
+        [self failWithCallbackID:command.callbackId withMessage:@"Application ID and Client Key are both required."];
+        return ;
     }
     
     [self successWithCallbackID:command.callbackId];

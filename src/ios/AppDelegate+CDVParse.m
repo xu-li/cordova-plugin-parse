@@ -7,6 +7,7 @@
 
 #import "AppDelegate+CDVParse.h"
 
+#import "CDVParse.h"
 #import <Parse/Parse.h>
 #import <objc/runtime.h>
 
@@ -55,28 +56,8 @@ void swizzleMethod(Class c, SEL originalSelector)
 {
     BOOL ret = [self swizzled_application:application didFinishLaunchingWithOptions:launchOptions];
 
-    // set parse application id
-    CDVViewController *viewController = self.viewController;
-    NSString *applicationId = [viewController.settings objectForKey:@"parse_application_id"];
-    NSString *clientKey = [viewController.settings objectForKey:@"parse_client_key"];
-    BOOL requestRemoteNotifications = [[viewController.settings objectForKey:@"request_remote_notification"] boolValue];
-    
-    if ([applicationId length] > 0 && [clientKey length] > 0) {
-        [Parse setApplicationId:applicationId clientKey:clientKey];
-        
-        NSLog(@"Parse Application ID: %@, Client Key: %@.", applicationId, clientKey);
-    }
-    
-    if (requestRemoteNotifications) {
-        // enable push notifiction
-        UIUserNotificationType userNotificationTypes = (UIUserNotificationTypeAlert |
-                                                        UIUserNotificationTypeBadge |
-                                                        UIUserNotificationTypeSound);
-        UIUserNotificationSettings *settings = [UIUserNotificationSettings settingsForTypes:userNotificationTypes
-                                                                                 categories:nil];
-        [application registerUserNotificationSettings:settings];
-        [application registerForRemoteNotifications];
-    }
+    CDVParse *parsePlugin = [self.viewController getCommandInstance:@"Parse"];
+    [parsePlugin configWithOptions:self.viewController.settings withPrefix:@"parse_"];
     
     return ret;
 }
@@ -106,7 +87,15 @@ void swizzleMethod(Class c, SEL originalSelector)
     // Call existing method
     [self swizzled_application:application didReceiveRemoteNotification:userInfo];
     
+    // Default behavior
     [PFPush handlePush:userInfo];
+    
+    // Check if callback is set
+    CDVParse *parsePlugin = [self.viewController getCommandInstance:@"Parse"];
+    if (parsePlugin.jsCallback) {
+        parsePlugin.notificationMessage = userInfo;
+        [parsePlugin performSelectorOnMainThread:@selector(notificationReceived) withObject:parsePlugin waitUntilDone:NO];
+    }
 }
 
 - (void)noop_application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo
