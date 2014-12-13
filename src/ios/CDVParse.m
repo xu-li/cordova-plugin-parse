@@ -155,8 +155,11 @@
     if (!users) {
         users = [[NSMutableArray alloc] init];
     }
-    
-    [users addObject:username];
+
+    NSInteger idx = [users indexOfObject:username];
+    if (NSNotFound == idx) {
+        [users addObject:username];
+    }
     currentInstallation[key] = users;
     
     [currentInstallation saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
