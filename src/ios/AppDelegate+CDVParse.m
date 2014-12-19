@@ -59,6 +59,11 @@ void swizzleMethod(Class c, SEL originalSelector)
     CDVParse *parsePlugin = [self.viewController getCommandInstance:@"Parse"];
     [parsePlugin configWithOptions:self.viewController.settings withPrefix:@"parse_"];
     
+    // in case this app is not running
+    if (launchOptions[UIApplicationLaunchOptionsRemoteNotificationKey] && parsePlugin.jsCallback) {
+        parsePlugin.notificationMessage = launchOptions[UIApplicationLaunchOptionsRemoteNotificationKey];
+    }
+    
     return ret;
 }
 

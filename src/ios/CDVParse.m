@@ -11,8 +11,26 @@
 
 @implementation CDVParse
 
+- (void)pluginInitialize
+{
+    [super pluginInitialize];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(pageDidLoad:) name:CDVPageDidLoadNotification object:self.webView];
+}
+
+- (void) pageDidLoad:(NSNotification *) notification
+{
+    if (![[notification name] isEqualToString:@"CDVPageDidLoadNotification"]) {
+        return ;
+    }
+
+    [self notificationReceived];
+}
+
 - (BOOL)configWithOptions:(NSDictionary *)options
 {
+    [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:CDVPageDidLoadNotification object:self.webView]];
+
     return [self configWithOptions:options withPrefix:@""];
 }
 
@@ -191,6 +209,11 @@
 {
     CDVPluginResult *commandResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:message];
     [self.commandDelegate sendPluginResult:commandResult callbackId:callbackID];
+}
+
+- (void)dealloc
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];   // this will remove all notification unless added using addObserverForName:object:queue:usingBlock:
 }
 
 @end
