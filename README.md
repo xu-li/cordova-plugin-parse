@@ -45,6 +45,15 @@ Set Javascript callback
 </widget>
 ```
 
+Enable Crash Reporting
+```
+<!-- config.xml -->
+<!-- See http://docs.phonegap.com/en/edge/config_ref_index.md.html#The%20config.xml%20File-->
+<widget>
+  <preference name="parse_enable_crash_reporting" value="true" />
+</widget>
+```
+
 ## How to use
 
 Set application id and client key(required if [configuration](https://github.com/xu-li/cordova-plugin-parse/blob/master/README.md#plugin-configuration) is not set)

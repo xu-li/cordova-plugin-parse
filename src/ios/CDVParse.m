@@ -8,6 +8,7 @@
 #import "CDVParse.h"
 
 #import <Parse/Parse.h>
+#import <ParseCrashReporting/ParseCrashReporting.h>
 
 @implementation CDVParse
 
@@ -41,9 +42,14 @@
     NSString *clientKey = options[[prefix stringByAppendingString:@"client_key"]];
     NSString *jsCallback = options[[prefix stringByAppendingString:@"notification_callback"]];
     BOOL requestRemoteNotifications = [options[[prefix stringByAppendingString:@"request_remote_notification"]] boolValue];
+    BOOL enableCrashReporting = [options[[prefix stringByAppendingString:@"enable_crash_reporting"]] boolValue];
     
     if ([applicationID length] == 0 || [clientKey length] == 0) {
         return NO;
+    }
+    
+    if (enableCrashReporting) {
+        [ParseCrashReporting enable];
     }
     
     NSLog(@"Parse Application ID: %@, Client Key: %@.", applicationID, clientKey);

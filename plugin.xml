@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0" id="xu.li.cordova.parse" version="0.1.2">
+<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0" id="xu.li.cordova.parse" version="0.2.0">
     <name>Parse.com</name>
     <description>Cordova Plugin for Parse.com</description>
     <license>MIT</license>
@@ -27,19 +27,24 @@
         <source-file src="src/ios/AppDelegate+CDVParse.m" />
 
         <!-- Parse official frameworks -->
-        <framework src="src/ios/frameworks/parse/1.5.0/Bolts.framework" custom="true" />
-        <framework src="src/ios/frameworks/parse/1.5.0/Parse.framework" custom="true" />
+        <framework src="src/ios/frameworks/parse/1.6.1/Bolts.framework" custom="true" />
+        <framework src="src/ios/frameworks/parse/1.6.1/Parse.framework" custom="true" />
+        <framework src="src/ios/frameworks/parse/1.6.1/ParseCrashReporting.framework" custom="true" />
 
         <!-- Required frameworks -->
         <framework src="AudioToolbox.framework" />
         <framework src="CFNetwork.framework" />
         <framework src="CoreGraphics.framework" />
         <framework src="CoreLocation.framework" />
-        <framework src="libz.dylib" />
         <framework src="MobileCoreServices.framework" />
         <framework src="QuartzCore.framework" />
         <framework src="Security.framework" />
         <framework src="StoreKit.framework" />
         <framework src="SystemConfiguration.framework" />
+        <framework src="libstdc++.6.dylib" />
+        <framework src="libz.dylib" />
+        <framework src="libsqlite3.dylib" />
+        <framework src="Accounts.framework" />
+        <framework src="Social.framework" />
     </platform>
 </plugin>
