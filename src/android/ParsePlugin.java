@@ -29,27 +29,26 @@ public class ParsePlugin extends CordovaPlugin {
 	@Override
 	protected void pluginInitialize() {
 		Context ctx = this.cordova.getActivity();
+        String prefix = "parse_";
 
 		// Enable Crash Reporting
-		String enableCrashReporting = webView.getProperty(
-				KEY_PARSE_ENABLE_CRASH_REPORTING, "");
+		String enableCrashReporting = webView.getProperty(prefix.concat(KEY_PARSE_ENABLE_CRASH_REPORTING), "");
 		if ("true".equals(enableCrashReporting)) {
 			ParseCrashReporting.enable(ctx);
-
             Log.d(TAG, "Parse crash reporting is enabled.");
 		} else {
             Log.d(TAG, "Parse crash reporting is not enabled.");
         }
 
 		// Setup Parse
-		String appId = webView.getProperty("parse_".concat(KEY_PARSE_APP_ID), "");
+		String appId = webView.getProperty(prefix.concat(KEY_PARSE_APP_ID), "");
 		if (!appId.isEmpty()) {
 			Parse.initialize(ctx, appId,
-					webView.getProperty("parse_".concat(KEY_PARSE_CLIENT_KEY), ""));
+					webView.getProperty(prefix.concat(KEY_PARSE_CLIENT_KEY), ""));
 		}
 		
 		// Callback
-		String callback = webView.getProperty("parse_".concat(KEY_PARSE_NOTIFICATION_CALLBACK), "");
+		String callback = webView.getProperty(prefix.concat(KEY_PARSE_NOTIFICATION_CALLBACK), "");
 		if (callback != null && !callback.isEmpty()) {
 			this.notificationCallback = callback;
 		}
