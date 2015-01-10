@@ -15,6 +15,8 @@ phonegap local plugin add https://github.com/xu-li/cordova-plugin-parse
 ionic plugin add https://github.com/xu-li/cordova-plugin-parse
 ```
 
+For android, you should set the ```android:name="xu.li.cordova.parse.ParsePluginApplication"``` to ```<application>``` in _AndroidManifest.xml_.
+
 ## Plugin Configuration
 
 Automatically set application id and client key when starts up
@@ -56,21 +58,6 @@ Enable Crash Reporting
 
 ## How to use
 
-Set application id and client key(required if [configuration](https://github.com/xu-li/cordova-plugin-parse/blob/master/README.md#plugin-configuration) is not set)
-
-```
-cordova.plugins.Parse.setup({
-    application_id:              YOUR_PARSE_APPLICATION_ID,
-    client_key:                  YOUR_PARSE_CLIENT_KEY,
-    request_remote_notification: true,
-    notification_callback:       'alert'
-}, function () {
-    alert("Done");
-}, function (error) {
-    alert("Something goes wrong." + error);
-});
-```
-
 Link username to installation
 ```
 var username = 'lixu'; // can be anything.
@@ -87,8 +74,8 @@ cordova.plugins.Parse.linkUsernameToInstallation(
 
 ## Roadmap
 
-* Android
-* Other API
+- [x] Android
+- [] Other API
 
 ## LICENSE
 
