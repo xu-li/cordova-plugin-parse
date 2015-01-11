@@ -67,6 +67,7 @@ public class ParsePlugin extends CordovaPlugin {
 
     @Override
     public void onNewIntent(Intent intent) {
+        /*
         Activity activity = cordova.getActivity();
         Intent oldIntent = activity.getIntent();
 
@@ -78,6 +79,7 @@ public class ParsePlugin extends CordovaPlugin {
             // callback
 //            webView.sendJavascript();
         }
+        */
 
         super.onNewIntent(intent);
     }
