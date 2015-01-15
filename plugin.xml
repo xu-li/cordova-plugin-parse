@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0" id="xu.li.cordova.parse" version="0.4.0">
+<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0" id="xu.li.cordova.parse" version="0.5.0">
     <name>Parse.com</name>
     <description>Cordova Plugin for Parse.com</description>
     <license>MIT</license>
@@ -50,6 +50,10 @@
 
     <!-- android -->
     <platform name="android">
+        <js-module src="www/android/callback.js" name="parse.android.callback">
+            <runs />
+        </js-module>
+
         <config-file target="res/xml/config.xml" parent="/*">
             <feature name="Parse">
                 <param name="android-package" value="xu.li.cordova.parse.ParsePlugin"/>
@@ -63,10 +67,6 @@
             <uses-permission android:name="android.permission.WAKE_LOCK" />
             <uses-permission android:name="android.permission.VIBRATE" />
             <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
-            <uses-permission android:name="android.permission.GET_ACCOUNTS" />
-            <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
-            <permission android:protectionLevel="signature" android:name="$PACKAGE_NAME.permission.C2D_MESSAGE" />
-            <uses-permission android:name="$PACKAGE_NAME.permission.C2D_MESSAGE" />
         </config-file>
 
         <config-file target="AndroidManifest.xml" parent="/manifest/application">
@@ -84,18 +84,11 @@
                     <action android:name="com.parse.push.intent.OPEN" />
                 </intent-filter>
             </receiver>
-            <receiver android:name="com.parse.GcmBroadcastReceiver" android:permission="com.google.android.c2dm.permission.SEND">
-                <intent-filter>
-                    <action android:name="com.google.android.c2dm.intent.RECEIVE" />
-                    <action android:name="com.google.android.c2dm.intent.REGISTRATION" />
-                    <category android:name="$PACKAGE_NAME" />
-                </intent-filter>
-            </receiver>
         </config-file>
 
         <source-file src="src/android/ParsePlugin.java" target-dir="src/xu/li/cordova/parse" />
         <source-file src="src/android/ParsePluginApplication.java" target-dir="src/xu/li/cordova/parse" />
-        <source-file src="src/android/ParsePluginHelper.java" target-dir="src/xu/li/cordova/parse" />
+        <source-file src="src/android/ParsePluginConfig.java" target-dir="src/xu/li/cordova/parse" />
         <source-file src="src/android/ParsePluginPushBroadcastReceiver.java" target-dir="src/xu/li/cordova/parse" />
         <source-file src="src/android/libs/parse/1.8.0/bolts-android-1.1.4.jar" target-dir="libs" />
         <source-file src="src/android/libs/parse/1.8.0/Parse-1.8.0.jar" target-dir="libs" />

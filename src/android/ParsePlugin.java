@@ -1,14 +1,17 @@
 package xu.li.cordova.parse;
 
-import android.app.Activity;
 import android.content.Intent;
+import android.os.Bundle;
+import android.util.Log;
 
 import com.parse.ParseInstallation;
 
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaArgs;
 import org.apache.cordova.CordovaPlugin;
+import org.apache.cordova.PluginResult;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,10 +22,11 @@ import java.util.List;
 
 public class ParsePlugin extends CordovaPlugin {
 	public final String TAG = "ParsePlugin";
-	
-	protected String notificationCallback = "";
 
-    public static final String KEY_PUSH_NOTIFICATION = "com.parse.Data";
+    public static final String KEY_INTENT_PARSE_PUSH_NOTIFICATION = "com.parse.Data";
+
+    // Saved callbackContext
+    CallbackContext pushNotificationCallbackContext = null;
 
 	@Override
 	protected void pluginInitialize() {
@@ -60,35 +64,61 @@ public class ParsePlugin extends CordovaPlugin {
 
 		    callbackContext.success();
 		    return true;
-		}
+		} else if ("setCallbackContext".equals(action)) {
+            pushNotificationCallbackContext = callbackContext;
+
+            PluginResult result = new PluginResult(PluginResult.Status.OK);
+            result.setKeepCallback(true);
+            callbackContext.sendPluginResult(result);
+
+            return true;
+        }
 		
 		return super.execute(action, args, callbackContext);
 	}
 
     @Override
     public void onNewIntent(Intent intent) {
-        /*
-        Activity activity = cordova.getActivity();
-        Intent oldIntent = activity.getIntent();
-
-        String pushNotification = intent.getExtras().getString(KEY_PUSH_NOTIFICATION);
-        if (!pushNotification.isEmpty()) {
-            oldIntent.putExtra(KEY_PUSH_NOTIFICATION, pushNotification);
-            activity.setIntent(oldIntent);
-
-            // callback
-//            webView.sendJavascript();
+        Bundle extras = intent.getExtras();
+        if (extras == null) {
+            super.onNewIntent(intent);
+            return ;
         }
-        */
+
+        String pushNotification = extras.getString(KEY_INTENT_PARSE_PUSH_NOTIFICATION);
+        if (pushNotification == null || pushNotification.isEmpty()) {
+            super.onNewIntent(intent);
+            return ;
+        }
+
+        Log.d(TAG, String.format("Get push notification: %s", pushNotification));
+
+        // call callback
+        if (pushNotificationCallbackContext != null) {
+            ParsePluginConfig config = ParsePluginConfig.getInstance();
+            String js = String.format("%s(%s)", config.getNotificationCallback(), pushNotification);
+            PluginResult result = new PluginResult(PluginResult.Status.OK, js);
+            result.setKeepCallback(true);
+            pushNotificationCallbackContext.sendPluginResult(result);
+        }
+
+        try {
+            JSONObject notification = new JSONObject(pushNotification);
+            // send postMessage
+            webView.postMessage(KEY_INTENT_PARSE_PUSH_NOTIFICATION, notification);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            super.onNewIntent(intent);
+            return ;
+        }
 
         super.onNewIntent(intent);
     }
 
-    public String getNotificationCallback() {
-		return notificationCallback;
-	}
+    @Override
+    public void onDestroy() {
+        pushNotificationCallbackContext = null;
 
-	public void setNotificationCallback(String notificationCallback) {
-		this.notificationCallback = notificationCallback;
-	}
+        super.onDestroy();
+    }
 }
